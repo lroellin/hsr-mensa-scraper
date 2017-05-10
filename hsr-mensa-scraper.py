@@ -22,7 +22,7 @@ class MenuItem:
         self.description = description
 
 
-def extract_day_elements(day, element):
+def extract_menu_day_elements(day, element):
     return element.find('div', {'id': 'menu-plan-tab' + str(day)})
 
 
@@ -38,22 +38,39 @@ def extract_menu_description(element):
     return element.find('p', {'class': 'menu-description'}).contents[0]
 
 
-def scrap_HSR_site(site):
+def extract_weekdays_elements(element):
+    return element.find('div', {'class': 'day-nav'})
+
+
+def extract_single_day(day, element):
+    return element.find('label', {'for': 'mp-tab' + str(day)})
+
+def extract_weekday(element):
+    return element.find('span', {'class': 'day'}).contents[0]
+
+def extract_date(element):
+    return element.find('span', {'class': 'date'}).contents[0]
+
+
+def scrap_site(site):
     logging.info("Loading site " + site.url)
     request = requests.get(site.url)
     data = BeautifulSoup(request.text, "html.parser")
+    daysElements = extract_weekdays_elements(data)
 
-    for i in range(1, 6):
-        todayElements = extract_day_elements(i, data)
-        if todayElements is not None:
-            today = SiteDay('Day ' + str(i))
-            for singleElement in extract_menu_item(todayElements):
+    for day in range(1, 6):
+        menu_elements = extract_menu_day_elements(day, data)
+        day_elements = extract_single_day(day, daysElements)
+        if menu_elements is not None and day_elements is not None:
+
+            today = SiteDay(extract_weekday(day_elements) + ", " + extract_date(day_elements))
+            for menu_element in extract_menu_item(menu_elements):
                 menuItem = MenuItem(
-                    extract_menu_title(singleElement),
-                    extract_menu_description(singleElement)
+                    extract_menu_title(menu_element),
+                    extract_menu_description(menu_element)
                 )
                 today.menus.append(menuItem)
-            site.days[i] = today
+            site.days[day] = today
 
 
 def print_menu(sites):
@@ -73,7 +90,7 @@ def main():
     ]
 
     for site in sites:
-        scrap_HSR_site(site)
+        scrap_site(site)
     print_menu(sites)
 
 
