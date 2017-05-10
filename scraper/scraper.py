@@ -1,15 +1,15 @@
 import logging
 import requests
-from scraper import classes
-from scraper import extract
 from bs4 import BeautifulSoup
+from . import classes
+from . import extract
 
 def format_date(weekday, date):
     return weekday + ', ' + date;
 
 
 def scrap_site(site):
-    logging.info('Loading site ' + site.name)
+    logging.info('Loading site ' + site.name.value)
     request = requests.get(site.url)
     data = BeautifulSoup(request.text, "html.parser")
     daysElements = extract.extract_weekdays_elements(data)

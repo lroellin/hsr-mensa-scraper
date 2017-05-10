@@ -1,11 +1,10 @@
-import logging
 from scraper import classes
 from scraper import scraper
 
 
 def print_menu(sites):
     for site in sites:
-        print('=== Menu for Site ' + site.name + ' ===')
+        print('=== Menu for Site ' + site.name.value + ' ===')
         for weekday in ['Mo', 'Di', 'Mi', 'Do', 'Fr']:
             print('== ' + weekday + ' ==')
             if weekday in site.days:
@@ -17,11 +16,10 @@ def print_menu(sites):
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
     sites = [
-        classes.Site('http://hochschule-rapperswil.sv-restaurant.ch/de/menuplan/mensa/', 'Mensa'),
+        classes.Site('http://hochschule-rapperswil.sv-restaurant.ch/de/menuplan/mensa/', classes.SiteType.MENSA),
         classes.Site('http://hochschule-rapperswil.sv-restaurant.ch/de/menuplan/forschungszentrum/',
-                     'Forschungszentrum')
+                     classes.SiteType.FORSCHUNGSZENTRUM)
     ]
 
     for site in sites:
