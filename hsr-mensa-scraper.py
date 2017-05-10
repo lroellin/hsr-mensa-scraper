@@ -41,11 +41,10 @@ def extract_menu_description(element):
 def scrap_HSR_site(site):
     logging.info("Loading site " + site.url)
     request = requests.get(site.url)
-    data = request.text
-    soup = BeautifulSoup(data, "html.parser")
+    data = BeautifulSoup(request.text, "html.parser")
 
     for i in range(1, 6):
-        todayElements = extract_day_elements(i, soup)
+        todayElements = extract_day_elements(i, data)
         if todayElements is not None:
             today = SiteDay('Day ' + str(i))
             for singleElement in extract_menu_item(todayElements):
