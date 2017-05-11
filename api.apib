@@ -1,0 +1,1349 @@
+FORMAT: 1A
+HOST: https://mensa.dreami.ch/v1/
+
+# HSR Mensa API
+
+The HSR Mensa API lets you get information about the menus at the HSR mensa.
+
+It scrapes the HSR Mensa page for you and extracts the needed information. This frees you from keeping your own scraper up-to-date and you can concentrate on actually writing a good app.
+
+The enumeration values for `site` are currently:
+
+* `mensa`
+* `forschungszentrum`
+
+The enumeration values for `weekday` are currently:
+
+* `mon`
+* `tue`
+* `wed`
+* `thu`
+* `fri`
+
+# Single days [/days]
+
+You can get information about a single day in the current week.
+
+## Get a day [GET /days/{weekday}]
+
++ Parameters
+    + weekday: mon (enum, optional) - The day to get the menu for
+        + Default: (today, or `mon` on Saturday and Sunday)
+
+
++ Response 200
+       + Schema
+
+            {
+            
+            }
+
+## Get a group [GET /groups/{id}/{?active}]
+
++ Parameters
+    + id: am5s9l5k9d43 (string) - ID of the group
+    + active: true (boolean, optional) - Just active people.
+        + Default: `true`
+    
++ Response 200
+
+    + Schema
+
+            {
+                "id": "Group ID",
+                "name": "Group name",
+                "people": [
+                    {
+                        "id": (integer) "Person ID",
+                        "name": "Person Name"
+                        "active": (boolean) "Person active",
+                    }, ...
+                ],
+                "currency": (enum[currency]) "Default currency",
+            }
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+## Edit a group [PUT /groups/{id}]
+
++ Parameters
+    + id: am5s9l5k9d43 (string) - ID of the group
+
++ Request (application/json)
+
+    + Schema
+        
+            {
+                "name": "Group name",
+                "currency": (enum[currency]) "Default currency",
+            }
+        
++ Response 200
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }    
+
++ Response 416 (application/json)
+
+    The currency does not fit to the array values.
+
+    + Body
+
+            {
+                "error": [
+                    "CURRENCY_NOT_VALID",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+## Delete a group [DELETE  /groups/{id}]
+
++ Parameters
+    + id: am5s9l5k9d43 (string) - ID of the group
+
++ Response 200
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+# People [/groups/{groupid}/people]
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+
+## Create a new person [POST]
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "name": "Person name", 
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "id": "Person ID",
+                "name": "Person name",
+                "active": (boolean) "Person active"
+                "update-time": "2012-04-23T18:25:43.511Z",
+                "create-time": "2010-04-32T12:21:13.495Z",
+            }
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 409 (application/json)
+
+    The person names clash in this group.
+
+    Note, that you CAN re-use a person's name if it's deactivated
+
+    + Body
+
+            {
+                "error": [
+                    "PEOPLE_NAME_CONFLICT",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+## Get People [GET /groups/{groupid}/people{?limit}&{?active}]
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+    + limit: 20 (number, optional) - The maximum number of results to return.
+        + Default: `20`
+    + active: true (boolean, optional) - Just active people.
+        + Default: `true`
+
++ Response 200 (application/json)
+
+    + Body
+
+            [
+                {
+                    "id": "Person ID",
+                    "name": "Person name",
+                    "active": (boolean) "Person active",
+                    "update-time": "2012-04-23T18:25:43.511Z",
+                    "create-time": "2010-04-32T12:21:13.495Z",
+                }, ...
+            ]  
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+
+## Edit a person [PUT /groups/{groupid}/people/{personid}]
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+    + personid: 4 (integer) - ID of the person
+
++ Request (application/json)
+
+    + Body
+
+            {
+                "name": "Person name", 
+            }
+
++ Response 200 (application/json)
+
+    + Body
+
+            {
+                "id": "Person ID",
+                "name": "Person name",
+                "active": (boolean) "Person active"
+                "update-time": "2012-04-23T18:25:43.511Z",
+                "create-time": "2010-04-32T12:21:13.495Z",
+            }  
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 404 (application/json)
+
+    The person ID is not found in this group
+
+    + Body
+
+            {
+                "error": [
+                    "PERSON_NOT_FOUND",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 409 (application/json)
+
+    The person names clash in this group.
+
+    + Body
+
+            {
+                "error": [
+                    "PEOPLE_NAME_CONFLICT",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            } 
+
++ Response 410 (application/json)
+
+    The person is inactive
+
+    + Attributes (object)
+        + error (array)
+            + PERSON_INACTIVE
+            
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+## Deactivate a person [DELETE /groups/{groupid}/people/{personid}]
+
+Deactivates a person. Note that there is no way to re-activate it.
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+    + personid: 4 (integer) - ID of the person
+
++ Response 200
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 404 (application/json)
+
+    The person ID is not found in this group
+
+    + Body
+
+            {
+                "error": [
+                    "PERSON_NOT_FOUND",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+# Expense [/groups/{groupid}/expenses]
+
+An expense is something one person bought and is shared with other people. The payer can decide who profits from that and can even set how much each one profits.
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+
+## Create an expense [POST]
+
++ Request (application/json)
+
+    + Schema
+
+            {
+                "title": "Title",
+                "payer": {
+                    "id": (integer) "Payer ID",
+                }, 
+                "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+                "profiteers": [
+                    {
+                        "person": {
+                            "id": (integer) "Profiteer ID",
+                        }, 
+                        "share": (integer) "Amount in Rappen/Cents",
+                    }, ...
+                ],
+            }
+
++ Response 200
+
+    + Schema
+        
+            {
+                "id": "Expense ID",
+                "title": "Title",
+                "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+                "payer": {
+                    "id": (integer) "Payer ID",
+                    "name": "Payer Name"
+                    "active": (boolean) "Person active",
+                }, 
+                "profiteers": [
+                    {
+                        "person": {
+                            "id": (integer) "Profiteer ID",
+                            "name": "Profiteer Name"
+                            "active": (boolean) "Person active",
+                        }, 
+                        "share": (integer) "Amount in Rappen/Cents",
+                    }, ...
+                ],
+                "create-time": (datetime) "Create time",
+                "update-time": (datetime) "Update Time"
+            }
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 404 (application/json)
+
+    Payer ID or Profiteer ID is not found in this group
+
+    + Attributes (object)
+        + error (array)
+            + PAYER_NOT_FOUND (string)
+            + PROFITEER_NOT_FOUND (string)
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 406 (application/json)
+
+    Shares don't add up to the amount or an amount / share was less than or equal to zero.
+
+    + Attributes (object)
+        + error (array)
+            + SHARES_DONT_ADD_UP
+            + VALUE_LESS_THAN_OR_EQUAL_TO_ZERO
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 410 (application/json)
+
+    The payer or one of the profiteers is inactive
+
+    + Attributes (object)
+        + error (array)
+            + PAYER_INACTIVE
+            + PROFITEER_INACTIVE
+            
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+## Get last expenses [GET /groups/{groupid}/expenses{?limit}]
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+    + limit: 20 (number, optional) - The maximum number of results to return.
+        + Default: `20`
+
++ Response 200
+
+    + Schema
+        
+            [
+                {
+                    "title": "Title",
+                    "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+                    "payer": {
+                        "id": (integer) "Payer ID",
+                        "name": "Payer Name"
+                        "active": (boolean) "Person active",
+                    }, 
+                    "profiteers": [
+                        {
+                            "person": {
+                                "id": (integer) "Profiteer ID",
+                                "name": "Profiteer Name"
+                                "active": (boolean) "Person active",
+                            }, 
+                            "share": (integer) "Amount in Rappen/Cents",
+                        }, ...
+                    ],
+                    "create-time": (datetime) "Create time",
+                    "update-time": (datetime) "Update Time"
+                }, ...
+            ]
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }  
+
+## Get an expense [GET /groups/{groupid}/expenses/{expenseid}]
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+    + expenseid: 2634 (integer) - ID of the expense
+
++ Response 200
+
+    + Schema
+        
+            {
+                "id": "Expense ID",
+                "title": "Title",
+                "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+                "payer": {
+                    "id": (integer) "Payer ID",
+                    "name": "Payer Name",
+                    "active": (boolean) "Person active",
+                }, 
+                "profiteers": [
+                    {
+                        "person": {
+                            "id": (integer) "Profiteer ID",
+                            "name": "Profiteer Name",
+                            "active": (boolean) "Person active",
+                        }, 
+                        "share": (integer) "Amount in Rappen/Cents",
+                    }, ...
+                ],
+                "create-time": (datetime) "Create time",
+                "update-time": (datetime) "Update Time"
+            }
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 404 (application/json)
+
+    Transaction ID is not found in this group
+
+    + Attributes (object)
+        + error (array)
+            + TRANSACTION_NOT_FOUND (string)
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+        
+
+## Edit an expense [PUT /groups/{groupid}/expenses/{expenseid}]
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+    + expenseid: 2634 (integer) - ID of the expense
+
++ Request (application/json)
+
+        {
+            "title": "Title",
+            "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+            "payer": {
+                    "id": (integer) "Payer ID",
+            }, 
+            "profiteers": [
+                {
+                    "person": {
+                            "id": (integer) "Profiteer ID",
+                    }, 
+                    "share": (integer) "Amount in Rappen/Cents",
+                }, ...
+            ],
+        }
+        
++ Response 200
+
+    + Schema
+        
+            {
+                "id": "Expense ID",
+                "title": "Title",
+                "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+                "payer": {
+                    "id": (integer) "Payer ID",
+                    "name": "Payer Name",
+                    "active": (boolean) "Person active",
+                }, 
+                "profiteers": [
+                    {
+                        "person": {
+                            "id": (integer) "Profiteer ID",
+                            "name": "Profiteer Name",
+                            "active": (boolean) "Person active",
+                        }, 
+                        "share": (integer) "Amount in Rappen/Cents",
+                    }, ...
+                ],
+                "create-time": (datetime) "Create time",
+                "update-time": (datetime) "Update Time"
+            }
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 404 (application/json)
+
+    Transaction ID, Payer ID or Profiteer ID is not found in this group
+
+    + Attributes (object)
+        + error (array)
+            + TRANSACTION_NOT_FOUND (string)
+            + PAYER_NOT_FOUND (string)
+            + PROFITEER_NOT_FOUND (string)
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+        
++ Response 406 (application/json)
+
+    Shares don't add up to the amount or an amount / share was less than or equal to zero.
+
+    + Attributes (object)
+        + error (array)
+            + SHARES_DONT_ADD_UP
+            + VALUE_LESS_THAN_OR_EQUAL_TO_ZERO
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+## Delete an expense [DELETE /groups/{groupid}/expenses/{expenseid}]
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+    + expenseid: 2634 (integer) - ID of the expense
+        
++ Response 200
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 404 (application/json)
+
+    Transaction ID is not found in this group
+
+    + Attributes (object)
+        + error (array)
+            + TRANSACTION_NOT_FOUND (string)
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+        
+# Compensation [/groups/{groupid}/compensations]
+
+A compensation is a payment that is recorded in tylr. It basically follows the Expense model, except there's just one profiteer.
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+
+## Create a compensation [POST]
+
++ Request (application/json)
+
+        {
+            "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+            "payer": {
+                    "id": (integer) "Payer ID",
+            }, 
+            "profiteer": {
+                "id": (integer) "Profiteer ID",
+            },
+        }
+        
++ Response 200 (application/json)
+
+    + Schema
+        
+            {
+                "id": (integer),
+                "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+                "payer": {
+                    "id": (integer) "Payer ID",
+                    "name": "Payer Name",
+                    "active": (boolean) "Person active",
+                }, 
+                "profiteer": {
+
+                    "id": (integer) "Profiteer ID",
+                    "name": "Profiteer Name"
+                    "active": (boolean) "Person active",
+                },
+                "create-time": (datetime) "Create time",
+                "update-time": (datetime) "Update Time",
+            }
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 404 (application/json)
+
+    Payer ID or Profiteer ID is not found in this group
+
+    + Attributes (object)
+        + error (array)
+            + PAYER_NOT_FOUND (string)
+            + PROFITEER_NOT_FOUND (string)
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+            
++ Response 406 (application/json)
+            
+    An amount was less than or equal to zero.
+
+    + Attributes (object)
+        + error (array)
+            + VALUE_LESS_THAN_OR_EQUAL_TO_ZERO
+
+
++ Response 409 (application/json)
+
+    Payer and Profiteer clash.
+
+    + Attributes (object)
+        + error (array)
+            + PAYER_AND_ROFITEER_CONFLICT
+
++ Response 410 (application/json)
+
+    The payer or the profiteer is inactive
+
+    + Attributes (object)
+        + error (array)
+            + PAYER_INACTIVE
+            + PROFITEER_INACTIVE
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+## Get last compensations [GET /groups/{groupid}/compensations{?limit}]
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+    + limit: 20 (number, optional) - The maximum number of results to return.
+        + Default: `20`
++ Response 200 (application/json)
+
+    + Schema
+        
+            [
+                {
+                    "id": (integer),
+                    "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+                    "payer": {
+                        "id": (integer) "Payer ID",
+                        "name": "Payer Name",
+                        "active": (boolean) "Person active",
+                    }, 
+                    profiteer": {
+                        "id": (integer) "Profiteer ID",
+                        "name": "Profiteer Name"
+                        "active": (boolean) "Person active",
+                    },
+                    "create-time": (datetime) "Create time",
+                    "update-time": (datetime) "Update Time",
+                }, ...
+            ]
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+        
+## Get a compensation [GET /groups/{groupid}/compensations/{compensationid}]
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+    + compensationid: 852 (integer) - ID of the compensation    
+
++ Response 200 (application/json)
+
+    + Schema
+        
+            {
+                "id": (integer),
+                "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+                "payer": {
+                    "id": (integer) "Payer ID",
+                    "name": "Payer Name",
+                    "active": (boolean) "Person active",
+                }, 
+                profiteer": {
+                    "id": (integer) "Profiteer ID",
+                    "name": "Profiteer Name"
+                    "active": (boolean) "Person active",
+                },
+                "create-time": (datetime) "Create time",
+                "update-time": (datetime) "Update Time",
+            }
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 404 (application/json)
+
+    Transaction ID is not found in this group
+
+    + Attributes (object)
+        + error (array)
+            + TRANSACTION_NOT_FOUND (string)
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+ 
+## Edit a compensation [PUT /groups/{groupid}/compensations/{compensationid}]
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+    + compensationid: 852 (integer) - ID of the compensation
+
++ Request (application/json)
+
+        {
+            "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+            "payer": {
+                "id": (integer) "Payer ID",
+            }, 
+            "profiteer": {
+                "id": (integer) "Profiteer ID",
+            },
+        }
+        
++ Response 200 (application/json)
+
+    + Schema
+        
+            {
+                "id": (integer),
+                "amount": (integer) "Whole amount in Rappen/Cents, for convenience and checking purposes",
+                "payer": {
+                    "id": (integer) "Payer ID",
+                    "name": "Payer Name",
+                    "active": (boolean) "Person active",
+                },
+                profiteer": {
+                    "id": (integer) "Profiteer ID",
+                    "name": "Profiteer Name"
+                    "active": (boolean) "Person active",
+                },
+                "create-time": (datetime) "Create time",
+                "update-time": (datetime) "Update Time",
+            }
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+            
++ Response 404 (application/json)
+
+    Transaction ID, Payer ID or Profiteer ID is not found in this group
+
+    + Attributes (object)
+        + error (array)
+            + TRANSACTION_NOT_FOUND (string)
+            + PAYER_NOT_FOUND (string)
+            + PROFITEER_NOT_FOUND (string)
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 406 (application/json)
+            
+    An amount was less than or equal to zero.
+
+    + Attributes (object)
+        + error (array)
+            + VALUE_LESS_THAN_OR_EQUAL_TO_ZERO
+            
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 409 (application/json)
+
+    Payer and Profiteer clash.
+
+    + Attributes (object)
+        + error (array)
+            + PAYER_AND_ROFITEER_CONFLICT
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+        
+## Delete a compensation [DELETE /groups/{groupid}/compensations/{compensationid}]
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+    + compensationid: 852 (integer) - ID of the compensation
+        
++ Response 200
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
++ Response 404 (application/json)
+
+    Transaction ID is not found in this group
+
+    + Attributes (object)
+        + error (array)
+            + TRANSACTION_NOT_FOUND (string)
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+        
+## Debt [/groups/{groupid}/debt]
+
+Shows the debt to the group with the concept of a balance.
+
+* A positive value means, the person has a credit on the group (the group owes this person)
+* A negative value means, the person has a debt on the group (this person owes the group)
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+
+### Get Debts [GET]
+
++ Response 200
+
+    + Schema
+
+            [
+
+                {
+                    "person": {
+                        "id": (integer) "ID of the person",
+                        "name": "Name of the person",
+                    },
+                    "balance": (integer) "Balance of the person in Rappen/Cents",
+                }, ...
+            ]
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
+
+## Settle up [/groups/{groupid}/settleup]
+
+Shows suggested compensations between group members. They're formatted as multiple compensations, so you could re-use them when the user wants to quickly settle up.
+
++ Parameters
+    + groupid: am5s9l5k9d43 (string) - ID of the group
+
+### Get Settle Up [GET]
+
++ Response 200
+
+    + Schema
+
+            [
+                {
+                    "amount": (integer) "Amount in Rappen/Cents",
+                    "payer": {
+                        "id": (integer) "ID of the person",
+                        "name": "Name of the person",
+                    },
+                    "profiteer": {
+                        "id": (integer) "ID of the person",
+                        "name": "Name of the person",
+                    },
+                }, ...
+            ]
+
++ Response 401 (application/json)
+
+    Error during authentication.
+
+    + Body
+
+            {
+                "error": [
+                    "NOT_AUTHORIZED_TO_GROUP",
+                ]
+            }
+
+    + Schema
+
+            {
+                "error": [ 
+                    "ERROR_CODE",
+                    ...
+                ]
+            }
