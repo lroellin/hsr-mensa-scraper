@@ -33,6 +33,8 @@ weekday_dict = {
     'fri': 'Fr'
 }
 
+sites = []
+
 
 def check_weekday(weekday):
     if weekday not in weekday_dict:
@@ -40,7 +42,7 @@ def check_weekday(weekday):
 
 
 def check_site(site):
-    if site not in classes.SiteType.__members__:
+    if site not in ['mensa', 'forschungszentrum']:
         abort(406, description='Invalid sitename')
 
 
@@ -51,41 +53,48 @@ def get_today():
     weekday = calendar.day_abbr[weekdaynumber]
     return weekday.lower()
 
+def update_sites():
+    global lastUpdate
+    global sites
+    if lastUpdate < datetime.datetime.now() - datetime.timedelta(minutes=1):
+        sites = [
+            classes.Site('http://hochschule-rapperswil.sv-restaurant.ch/de/menuplan/mensa/', classes.SiteType.MENSA),
+            classes.Site('http://hochschule-rapperswil.sv-restaurant.ch/de/menuplan/forschungszentrum/',
+                         classes.SiteType.FORSCHUNGSZENTRUM)
+        ]
+        for site in sites:
+            scraper.scrap_site(site)
+        print('Updating sites...')
+        lastUpdate = datetime.datetime.now()
 
 class SingleSite(Resource):
-    def __init__(self, sites):
-        self.sites = sites
-
     @marshal_with(Site_fields)
     def get(self, sitename):
+        update_sites()
         check_site(sitename)
-        for site in self.sites:
+        for site in sites:
             if site.site.value == sitename:
                 return site
         abort(404, description="This site was not found")
 
 
 class AllSites(Resource):
-    def __init__(self, sites):
-        self.sites = sites
-
     @marshal_with(Site_fields, envelope='sites')
     def get(self):
-        return self.sites
+        update_sites()
+        return sites
 
 
 class SingleSiteSingleDay(Resource):
-    def __init__(self, sites):
-        self.sites = sites
-
     @marshal_with(Site_fields)
     def get(self, sitename, weekday):
+        update_sites()
         check_site(sitename)
         if weekday == 'today':
             weekday = get_today()
         check_weekday(weekday)
         german_weekday = weekday_dict[weekday]
-        for site in self.sites:
+        for site in sites:
             if site.site.value == sitename:
                 for day in site.days:
                     if day.weekday == german_weekday:
@@ -97,17 +106,15 @@ class SingleSiteSingleDay(Resource):
 
 
 class AllSiteSingleDay(Resource):
-    def __init__(self, sites):
-        self.sites = sites
-
     @marshal_with(Site_fields, envelope='sites')
     def get(self, weekday):
+        update_sites()
         returnSites = []
         if weekday == 'today':
             weekday = get_today()
         check_weekday(weekday)
         german_weekday = weekday_dict[weekday]
-        for site in self.sites:
+        for site in sites:
             for day in site.days:
                 if day.weekday == german_weekday:
                     returnSite = classes.Site(site.url, site.site)
@@ -120,23 +127,15 @@ class AllSiteSingleDay(Resource):
 
 
 def main():
-    sites = [
-        classes.Site('http://hochschule-rapperswil.sv-restaurant.ch/de/menuplan/mensa/', classes.SiteType.MENSA),
-        classes.Site('http://hochschule-rapperswil.sv-restaurant.ch/de/menuplan/forschungszentrum/',
-                     classes.SiteType.FORSCHUNGSZENTRUM)
-    ]
+    global lastUpdate
+    lastUpdate = datetime.datetime.fromtimestamp(0)
 
-    for site in sites:
-        scraper.scrap_site(site)
+    api.add_resource(SingleSite, '/site/<string:sitename>')
+    api.add_resource(AllSites, '/site/all')
+    api.add_resource(SingleSiteSingleDay, '/site/<string:sitename>/days/<string:weekday>')
+    api.add_resource(AllSiteSingleDay, '/site/all/days/<string:weekday>')
 
-    api.add_resource(SingleSite, '/site/<string:sitename>', resource_class_kwargs={'sites': sites})
-    api.add_resource(AllSites, '/site/all', resource_class_kwargs={'sites': sites})
-    api.add_resource(SingleSiteSingleDay, '/site/<string:sitename>/days/<string:weekday>',
-                     resource_class_kwargs={'sites': sites})
-    api.add_resource(AllSiteSingleDay, '/site/all/days/<string:weekday>',
-                     resource_class_kwargs={'sites': sites})
-
-    app.run(debug=True)
+    app.run()
 
 
 if __name__ == "__main__":
