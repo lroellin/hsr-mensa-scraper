@@ -8,6 +8,7 @@ The HSR Mensa API lets you get information about the menus at the HSR mensa.
 It scrapes the HSR Mensa page for you and extracts the needed information. This frees you from keeping your own scraper up-to-date and you can concentrate on actually writing a good app.
 
 
+
 # Technical Briefing
 
 The enumeration values for `site` are currently:
@@ -88,6 +89,10 @@ Get information about a site (all upcoming weekdays)
                 "description": "Invalid sitename",
             }
 
++ Response 503 (application/json)
+
+        The scraping didn't work properly and you should raise an issue at github.com/lroellin/hsr-mensa-scraper
+
 ## Get all sites [/site/all]
 
 Get information about all sites (upcoming weekdays)
@@ -156,6 +161,10 @@ Get information about all sites (upcoming weekdays)
                     }
                 ]
             }
+
++ Response 503 (application/json)
+
+        The scraping didn't work properly and you should raise an issue at github.com/lroellin/hsr-mensa-scraper
 
 
 ## Get a single day for a single site [/site/{site}/days/{weekday}]
@@ -241,6 +250,10 @@ Get information about a single day at a single site
                 "description": "Invalid sitename",
             }
 
++ Response 503 (application/json)
+
+        The scraping didn't work properly and you should raise an issue at github.com/lroellin/hsr-mensa-scraper
+
 ## Get a single day for all site [/site/all/days/{weekday}]
 
 Get information about a single day at all sites
@@ -313,6 +326,9 @@ Get information about a single day at all sites
                 ]
             }
 
++ Response 503 (application/json)
+
+        The scraping didn't work properly and you should raise an issue at github.com/lroellin/hsr-mensa-scraper
 
 + Response 404 (application/json)
 
@@ -343,3 +359,7 @@ Get information about a single day at all sites
             {
                 "description": "Invalid weekday",
             }
+
++ Response 503 (application/json)
+
+        The scraping didn't work properly and you should raise an issue at github.com/lroellin/hsr-mensa-scraper

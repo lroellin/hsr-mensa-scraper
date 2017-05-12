@@ -53,6 +53,7 @@ def get_today():
     weekday = calendar.day_abbr[weekdaynumber]
     return weekday.lower()
 
+
 def update_sites():
     global lastUpdate
     global sites
@@ -64,8 +65,12 @@ def update_sites():
         ]
         for site in sites:
             scraper.scrap_site(site)
+            if len(site.days) < 1:
+                abort(503,
+                      description='The scraping didn\'t work properly. Please open an issue at github.com/lroellin/hsr-mensa-scraper!')
         print('Updating sites...')
         lastUpdate = datetime.datetime.now()
+
 
 class SingleSite(Resource):
     @marshal_with(Site_fields)
