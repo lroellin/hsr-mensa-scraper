@@ -144,19 +144,19 @@ class AllSiteSingleDay(Resource):
 
 
 def main():
-    filename = "logs/access.log"
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-    fileHandler = TimedRotatingFileHandler(filename, when='midnight', backupCount=365)
-    logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)s: %(message)s',
-                        datefmt='%m-%d (%a) %H:%M:%S',
-                        handlers=[fileHandler]
-                        )
-    global lastUpdate
-    lastUpdate = datetime.datetime.fromtimestamp(0)
 
     application.run(debug=True, host='0.0.0.0', port=5000)
 
+filename = "logs/access.log"
+os.makedirs(os.path.dirname(filename), exist_ok=True)
+fileHandler = TimedRotatingFileHandler(filename, when='midnight', backupCount=365)
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s: %(message)s',
+                    datefmt='%m-%d (%a) %H:%M:%S',
+                    handlers=[fileHandler]
+                    )
+
+lastUpdate = datetime.datetime.fromtimestamp(0)
 
 api.add_resource(AllSites, '/sites/all')
 api.add_resource(AllSiteSingleDay, '/sites/all/days/<string:weekday>')
