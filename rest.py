@@ -67,7 +67,9 @@ def update_sites():
             scraper.scrap_site(site)
             if len(site.days) < 1:
                 abort(503,
-                      description='The scraping didn\'t work properly. Please open an issue at github.com/lroellin/hsr-mensa-scraper!')
+                      description='There are no upcoming days on the website (normal on a weekend). '
+                                  'If a manual check proves otherwise, please file an issue at github.com/lroellin/hsr-mensa-scraper. '
+                                  'URL: ' + site.url)
         print('Updating sites...')
         lastUpdate = datetime.datetime.now()
 
