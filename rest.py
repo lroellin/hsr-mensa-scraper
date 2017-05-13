@@ -160,7 +160,7 @@ def main():
     api.add_resource(SingleSite, '/sites/<string:sitename>')
     api.add_resource(SingleSiteSingleDay, '/sites/<string:sitename>/days/<string:weekday>')
 
-    app.run()
+    app.run(host='0.0.0.0')
 
 
 if __name__ == "__main__":
