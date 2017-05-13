@@ -155,13 +155,13 @@ def main():
     global lastUpdate
     lastUpdate = datetime.datetime.fromtimestamp(0)
 
+    application.run(debug=True, host='0.0.0.0', port=5000)
+
 
 api.add_resource(AllSites, '/sites/all')
 api.add_resource(AllSiteSingleDay, '/sites/all/days/<string:weekday>')
 api.add_resource(SingleSite, '/sites/<string:sitename>')
 api.add_resource(SingleSiteSingleDay, '/sites/<string:sitename>/days/<string:weekday>')
-
-application.run(debug=True, host='0.0.0.0', port=5000)
 
 
 @application.errorhandler(404)
