@@ -8,9 +8,9 @@ import os
 from scraper import classes
 from scraper import scraper
 
-app = Flask('hsr-mensa-scraper')
+application = Flask('hsr-mensa-scraper')
 
-api = Api(app)
+api = Api(application)
 
 MenuItem_fields = {
     'title': fields.String,
@@ -160,7 +160,7 @@ def main():
     api.add_resource(SingleSite, '/sites/<string:sitename>')
     api.add_resource(SingleSiteSingleDay, '/sites/<string:sitename>/days/<string:weekday>')
 
-    app.run(debug=True,host='0.0.0.0', port=5000)
+    application.run(debug=True, host='0.0.0.0', port=5000)
 
 
 
