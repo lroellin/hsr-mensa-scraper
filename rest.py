@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_restful import Resource, Api, fields, marshal_with, abort
+from flask_restful import Resource, Api, fields, marshal_with, abort, request
 import datetime
 import calendar
 import logging
@@ -162,7 +162,9 @@ def main():
 
     application.run(debug=True, host='0.0.0.0', port=5000)
 
-
+@application.errorhandler(404)
+def page_not_found(error):
+    return 'This route does not exist {}'.format(request.url), 404
 
 if __name__ == "__main__":
     main()
