@@ -155,10 +155,10 @@ def main():
     global lastUpdate
     lastUpdate = datetime.datetime.fromtimestamp(0)
 
-    api.add_resource(SingleSite, '/site/<string:sitename>')
-    api.add_resource(AllSites, '/site/all')
-    api.add_resource(SingleSiteSingleDay, '/site/<string:sitename>/days/<string:weekday>')
-    api.add_resource(AllSiteSingleDay, '/site/all/days/<string:weekday>')
+    api.add_resource(AllSites, '/sites/all')
+    api.add_resource(AllSiteSingleDay, '/sites/all/days/<string:weekday>')
+    api.add_resource(SingleSite, '/sites/<string:sitename>')
+    api.add_resource(SingleSiteSingleDay, '/sites/<string:sitename>/days/<string:weekday>')
 
     app.run()
 
