@@ -162,6 +162,8 @@ def main():
 
     app.run(host='0.0.0.0')
 
+    print("Server running")
+
 
 if __name__ == "__main__":
     main()
