@@ -9,9 +9,9 @@ before_script: npm install -g aglio && mkdir dist
 script: aglio --theme-variables streak  -i api.apib -o dist/index.html
 
 deploy:
-  provider: pages
-  skip_cleanup: true
-  github_token: $GITHUB_TOKEN
-  local_dir: dist
-  on:
-    branch: master
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    local_dir: dist
+    on:
+      branch: master

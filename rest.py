@@ -2,6 +2,9 @@ from flask import Flask
 from flask_restful import Resource, Api, fields, marshal_with, abort
 import datetime
 import calendar
+import logging
+from logging.handlers import TimedRotatingFileHandler
+import os
 from scraper import classes
 from scraper import scraper
 
@@ -57,7 +60,8 @@ def get_today():
 def update_sites():
     global lastUpdate
     global sites
-    if lastUpdate < datetime.datetime.now() - datetime.timedelta(minutes=1):
+    logging.info("last update: " + str(lastUpdate))
+    if lastUpdate < datetime.datetime.now() - datetime.timedelta(hours=1):
         sites = [
             classes.Site('http://hochschule-rapperswil.sv-restaurant.ch/de/menuplan/mensa/', classes.SiteType.MENSA),
             classes.Site('http://hochschule-rapperswil.sv-restaurant.ch/de/menuplan/forschungszentrum/',
@@ -70,13 +74,16 @@ def update_sites():
                       description='There are no upcoming days on the website (normal on a weekend). '
                                   'If a manual check proves otherwise, please file an issue at github.com/lroellin/hsr-mensa-scraper. '
                                   'URL: ' + site.url)
-        print('Updating sites...')
+        logging.info("Updating sites")
         lastUpdate = datetime.datetime.now()
+    else:
+        logging.info('No need to update')
 
 
 class SingleSite(Resource):
     @marshal_with(Site_fields)
     def get(self, sitename):
+        logging.info('Request for Single site, sitename: ' + sitename)
         update_sites()
         check_site(sitename)
         for site in sites:
@@ -88,6 +95,7 @@ class SingleSite(Resource):
 class AllSites(Resource):
     @marshal_with(Site_fields, envelope='sites')
     def get(self):
+        logging.info('Request for All sites')
         update_sites()
         return sites
 
@@ -95,6 +103,7 @@ class AllSites(Resource):
 class SingleSiteSingleDay(Resource):
     @marshal_with(Site_fields)
     def get(self, sitename, weekday):
+        logging.info('Request for Single Site Single Day, sitename: ' + sitename + ', weekday: ' + weekday)
         update_sites()
         check_site(sitename)
         if weekday == 'today':
@@ -115,6 +124,7 @@ class SingleSiteSingleDay(Resource):
 class AllSiteSingleDay(Resource):
     @marshal_with(Site_fields, envelope='sites')
     def get(self, weekday):
+        logging.info('Request for All Sites Single Day, weekday: ' + weekday)
         update_sites()
         returnSites = []
         if weekday == 'today':
@@ -134,6 +144,14 @@ class AllSiteSingleDay(Resource):
 
 
 def main():
+    filename = "logs/access.log"
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    fileHandler = TimedRotatingFileHandler(filename, when='midnight', backupCount=365)
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s: %(message)s',
+                        datefmt='%m-%d (%a) %H:%M:%S',
+                        handlers=[fileHandler]
+                        )
     global lastUpdate
     lastUpdate = datetime.datetime.fromtimestamp(0)
 
