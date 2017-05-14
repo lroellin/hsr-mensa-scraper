@@ -69,29 +69,13 @@ Get information about a site (all upcoming weekdays)
             }
 
 
-+ Response 404 (application/json)
++ Response 503 (application/json)
 
-        The site was not found
-
-        + Body
-
-            {
-                "description": "This site was not found",
-            }
+        There is no data (normal on a weekend)
 
 + Response 406 (application/json)
 
-        Invalid sitename
-
-        + Body
-
-            {
-                "description": "Invalid sitename",
-            }
-
-+ Response 503 (application/json)
-
-        The scraping didn't work properly and you should raise an issue at github.com/lroellin/hsr-mensa-scraper
+        Invalid site value
 
 ## Get all sites [/sites/all]
 
@@ -210,49 +194,17 @@ Get information about a single day at a single site
             }
 
 
-+ Response 404 (application/json)
-
-        The site was not found
-
-        + Body
-
-            {
-                "description": "This site was not found",
-            }
-
-+ Response 404 (application/json)
-
-        The weekday was not found
-
-        + Body
-
-            {
-                "description": "This weekday was not found",
-            }
-
-+ Response 406 (application/json)
-
-        Invalid Weekday
-
-        + Body
-
-            {
-                "description": "Invalid weekday",
-            }
-
-+ Response 406 (application/json)
-
-        Invalid sitename
-
-        + Body
-
-            {
-                "description": "Invalid sitename",
-            }
-
 + Response 503 (application/json)
 
         There is no data (normal on a weekend)
+
++ Response 404 (application/json)
+
+        No menu for this day
+
++ Response 406 (application/json)
+
+        Invalid site or weekday value
 
 ## Get a single day for all site [/sites/all/days/{weekday}]
 
@@ -332,34 +284,8 @@ Get information about a single day at all sites
 
 + Response 404 (application/json)
 
-        The site was not found
-
-        + Body
-
-            {
-                "description": "This site was not found",
-            }
-
-+ Response 404 (application/json)
-
-        The weekday was not found
-
-        + Body
-
-            {
-                "description": "This weekday was not found",
-            }
+        No menu for this day
 
 + Response 406 (application/json)
 
-        Invalid Weekday 
-
-        + Body
-
-            {
-                "description": "Invalid weekday",
-            }
-
-+ Response 503 (application/json)
-
-        There is no data (normal on a weekend)
+        Invalid weekday value

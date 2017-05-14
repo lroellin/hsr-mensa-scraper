@@ -89,7 +89,6 @@ class SingleSite(Resource):
         for site in sites:
             if site.site.value == sitename:
                 return site
-        abort(404, description="This site was not found")
 
 
 class AllSites(Resource):
@@ -118,7 +117,6 @@ class SingleSiteSingleDay(Resource):
                         returnSite.days.append(day)
                         return returnSite
                 abort(404, description="No menu for this day!")
-        abort(404, description="This site was not found")
 
 
 class AllSiteSingleDay(Resource):
