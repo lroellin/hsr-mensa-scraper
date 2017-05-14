@@ -27,7 +27,7 @@ The enumeration values for `weekday` are currently:
 
 Note that we can only display upcoming days (if on a weekend, the past week) since we scrap once each day and we don't cache anything from earlier days.
 
-## Get a site [/site/{site}]
+## Get a site [/sites/{site}]
 
 Get information about a site (all upcoming weekdays)
 
@@ -93,7 +93,7 @@ Get information about a site (all upcoming weekdays)
 
         The scraping didn't work properly and you should raise an issue at github.com/lroellin/hsr-mensa-scraper
 
-## Get all sites [/site/all]
+## Get all sites [/sites/all]
 
 Get information about all sites (upcoming weekdays)
 
@@ -167,7 +167,7 @@ Get information about all sites (upcoming weekdays)
         There is no data (normal on a weekend)
 
 
-## Get a single day for a single site [/site/{site}/days/{weekday}]
+## Get a single day for a single site [/sites/{site}/days/{weekday}]
 
 Get information about a single day at a single site
 
@@ -232,7 +232,7 @@ Get information about a single day at a single site
 
 + Response 406 (application/json)
 
-        Invalid Weekday 
+        Invalid Weekday
 
         + Body
 
@@ -254,7 +254,7 @@ Get information about a single day at a single site
 
         There is no data (normal on a weekend)
 
-## Get a single day for all site [/site/all/days/{weekday}]
+## Get a single day for all site [/sites/all/days/{weekday}]
 
 Get information about a single day at all sites
 

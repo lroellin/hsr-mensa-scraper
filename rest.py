@@ -158,10 +158,15 @@ logging.basicConfig(level=logging.INFO,
 
 lastUpdate = datetime.datetime.fromtimestamp(0)
 
-api.add_resource(AllSites, '/sites/all')
-api.add_resource(AllSiteSingleDay, '/sites/all/days/<string:weekday>')
-api.add_resource(SingleSite, '/sites/<string:sitename>')
-api.add_resource(SingleSiteSingleDay, '/sites/<string:sitename>/days/<string:weekday>')
+VERSION_1 = '/v1'
+ALL_SITES = '/sites/all'
+SINGLE_SITE = '/sites/<string:sitename>'
+SINGLE_DAY = '/days/<string:weekday>'
+
+api.add_resource(AllSites, VERSION_1 + ALL_SITES)
+api.add_resource(AllSiteSingleDay, VERSION_1 + ALL_SITES + SINGLE_DAY)
+api.add_resource(SingleSite, VERSION_1 + SINGLE_SITE)
+api.add_resource(SingleSiteSingleDay, VERSION_1 + SINGLE_SITE + SINGLE_DAY)
 
 
 @application.errorhandler(404)
