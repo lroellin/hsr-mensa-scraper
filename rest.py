@@ -140,14 +140,15 @@ class AllSiteSingleDay(Resource):
         else:
             abort(404, description="No menu for this day!")
 
-@application.route('/')
-def hello():
-    return redirect("http://www.dreami.ch/hsr-mensa-scraper/", code=302)
+
+@application.errorhandler(404)
+def page_not_found(error):
+    redirect("http://www.dreami.ch/hsr-mensa-scraper/", code=302)
 
 
 def main():
-
     application.run(debug=True, host='0.0.0.0', port=5000)
+
 
 filename = "logs/access.log"
 os.makedirs(os.path.dirname(filename), exist_ok=True)
@@ -169,7 +170,6 @@ api.add_resource(AllSites, VERSION_1 + ALL_SITES)
 api.add_resource(AllSiteSingleDay, VERSION_1 + ALL_SITES + SINGLE_DAY)
 api.add_resource(SingleSite, VERSION_1 + SINGLE_SITE)
 api.add_resource(SingleSiteSingleDay, VERSION_1 + SINGLE_SITE + SINGLE_DAY)
-
 
 if __name__ == "__main__":
     main()
