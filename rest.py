@@ -141,9 +141,9 @@ class AllSiteSingleDay(Resource):
             abort(404, description="No menu for this day!")
 
 
-@application.errorhandler(404)
-def page_not_found(error):
-    redirect("http://www.dreami.ch/hsr-mensa-scraper/", code=302)
+@application.route('/')
+def hello():
+    return redirect("http://www.dreami.ch/hsr-mensa-scraper/", code=302)
 
 
 def main():
