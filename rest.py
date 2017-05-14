@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect
 from flask_restful import Resource, Api, fields, marshal_with, abort, request
 import datetime
 import calendar
@@ -140,6 +140,10 @@ class AllSiteSingleDay(Resource):
         else:
             abort(404, description="No menu for this day!")
 
+@application.route('/')
+def hello():
+    return redirect("http://www.dreami.ch/hsr-mensa-scraper/", code=302)
+
 
 def main():
 
@@ -165,11 +169,6 @@ api.add_resource(AllSites, VERSION_1 + ALL_SITES)
 api.add_resource(AllSiteSingleDay, VERSION_1 + ALL_SITES + SINGLE_DAY)
 api.add_resource(SingleSite, VERSION_1 + SINGLE_SITE)
 api.add_resource(SingleSiteSingleDay, VERSION_1 + SINGLE_SITE + SINGLE_DAY)
-
-
-@application.errorhandler(404)
-def page_not_found(error):
-    return 'This route does not exist {}'.format(request.url), 404
 
 
 if __name__ == "__main__":
