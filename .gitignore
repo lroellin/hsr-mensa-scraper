@@ -89,5 +89,5 @@ ENV/
 .ropeproject
 
 .idea/
-
+nohup.out
 logs/
