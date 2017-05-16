@@ -7,11 +7,15 @@ def extract_menu_item(element):
 
 
 def extract_menu_title(element):
-    return element.find('h2', {'class': 'menu-title'}).contents[0]
+    menu_title = element.find('h2', {'class': 'menu-title'}).contents[0]
+    menu_title = menu_title.replace(u'\xAD', u'')
+    return menu_title
 
 
 def extract_menu_description(element):
-    return element.find('p', {'class': 'menu-description'}).contents[0]
+    menu_description = element.find('p', {'class': 'menu-description'}).contents[0]
+    menu_description = menu_description.replace(u'\xAD', u'')
+    return menu_description
 
 
 def extract_weekdays_elements(element):
