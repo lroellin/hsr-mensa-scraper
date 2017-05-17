@@ -1,5 +1,5 @@
 from flask import Flask, redirect
-from flask_restful import Resource, Api, fields, marshal_with, abort, request
+from flask_restful import Resource, Api, fields, marshal_with, abort, output_json
 import datetime
 import calendar
 import logging
@@ -8,9 +8,22 @@ import os
 from scraper import classes
 from scraper import scraper
 
+class UnicodeApi(Api):
+    """
+    from here: https://github.com/flask-restful/flask-restful/issues/552
+    """
+    def __init__(self, *args, **kwargs):
+        super(UnicodeApi, self).__init__(*args, **kwargs)
+        self.app.config['RESTFUL_JSON'] = {
+            'ensure_ascii': False
+        }
+        self.representations = {
+            'application/json; charset=utf-8': output_json
+        }
+
 application = Flask('hsr-mensa-scraper')
 
-api = Api(application)
+api = UnicodeApi(application)
 
 MenuItem_fields = {
     'title': fields.String,
