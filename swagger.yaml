@@ -1,0 +1,151 @@
+swagger: "2.0"
+
+info:
+  version: 1.0.0
+  title: Simple API
+  description: A simple API to learn how to write OpenAPI Specification
+
+schemes:
+  - https
+host: mensa.dreami.ch
+basePath: /v1
+
+paths: 
+  /sites/{sitename}:
+    get:
+      summary: 'Get a single site'
+      parameters:
+       - name: sitename
+         in: path
+         description: Site to query
+         required: true
+         type: string
+         enum:
+         - mensa
+         - forschungszentrum
+      responses:
+        200:
+          description: Single site
+          schema:
+            $ref: '#/definitions/Site'
+        503:
+          description: The scraping didn't work
+        406:
+          description: Invalid site name
+          
+  /sites/all:
+    get:
+      summary: 'Get all sites'
+      responses:
+        200:
+          description: All sites
+          schema:
+            $ref: '#/definitions/Sites'
+        503:
+          description: The scraping didn't work
+  
+  /sites/{sitename}/days/{day}:
+    get:
+      summary: 'Get a single day for a single site'
+      parameters:
+       - name: sitename
+         in: path
+         description: Site to query
+         required: true
+         type: string
+         enum:
+         - mensa
+         - forschungszentrum
+       - name: day
+         in: path
+         description: Day to query
+         required: true
+         type: string
+         enum:
+         - mon
+         - tue
+         - wed
+         - thu
+         - fri
+         - forschungszentrum
+      responses:
+        200:
+          description: Single day for a single site
+          schema:
+            $ref: '#/definitions/Site'
+        503:
+          description: The scraping didn't work
+        404:
+          description: No menu for this day
+        406:
+          description: Invalid site name or weekday name
+        
+  /sites/all/days/{day}:
+    get:
+      summary: 'Get a single day for all sites'
+      parameters:
+       - name: day
+         in: path
+         description: Day to query
+         required: true
+         type: string
+         enum:
+         - mon
+         - tue
+         - wed
+         - thu
+         - fri
+         - forschungszentrum
+      responses:
+        200:
+          description: Single day for all sites
+          schema:
+            $ref: '#/definitions/Sites'
+        503:
+          description: The scraping didn't work
+        404:
+          description: No menu for this day
+        406:
+          description: Invalid weekday name   
+        
+        
+        
+
+definitions:
+  Sites:
+    properties:
+      sites:
+        type: array
+        items:
+          $ref: '#/definitions/Site'
+
+  Site:
+    properties:
+      site:
+        type: string
+        enum:
+          - SiteType.MENSA
+          - SiteType.FORSCHUNGSZENTRUM
+      days:
+        type: array
+        items:
+          $ref: '#/definitions/Day'
+  
+  Day:
+    properties:
+      weekday:
+        type: string
+      date:
+        type: string
+      menus:
+        type: array
+        items:
+          $ref: '#/definitions/Menu'
+  
+  
+  Menu:
+    properties:
+      title:
+        type: string
+      description:
+        type: string
