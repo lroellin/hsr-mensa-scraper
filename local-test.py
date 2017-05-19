@@ -12,8 +12,6 @@ def print_menu(sites):
                 print(menu.description)
 
 
-
-
 def main():
     sites = [
         classes.Site('http://hochschule-rapperswil.sv-restaurant.ch/de/menuplan/mensa/', classes.SiteType.MENSA),

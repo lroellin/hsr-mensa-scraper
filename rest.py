@@ -84,16 +84,19 @@ def update_sites():
                          classes.SiteType.FORSCHUNGSZENTRUM)
         ]
         for site in sites:
+            # noinspection PyBroadException
             try:
                 scraper.scrap_site(site)
             except:
                 abort(500,
-                      description='Uh-oh, scraping didn\'t work. Please file an issue at github.com/lroellin/hsr-mensa-scaper')
+                      description='Uh-oh, scraping didn\'t work. '
+                                  'Please file an issue at github.com/lroellin/hsr-mensa-scaper')
 
             if len(site.days) < 1:
                 abort(503,
                       description='There are no upcoming days on the website (normal on a weekend). '
-                                  'If a manual check proves otherwise, please file an issue at github.com/lroellin/hsr-mensa-scraper. '
+                                  'If a manual check proves otherwise, please file an issue '
+                                  'at github.com/lroellin/hsr-mensa-scraper. '
                                   'URL: ' + site.url)
         logging.info("Updating sites")
         lastUpdate = datetime.datetime.now()
@@ -134,9 +137,9 @@ class SingleSiteSingleDay(Resource):
             if site.site.value == sitename:
                 for day in site.days:
                     if day.weekday == german_weekday:
-                        returnSite = classes.Site(site.url, site.site)
-                        returnSite.days.append(day)
-                        return returnSite
+                        return_site = classes.Site(site.url, site.site)
+                        return_site.days.append(day)
+                        return return_site
                 abort(404, description="No menu for this day!")
 
 
@@ -145,7 +148,7 @@ class AllSiteSingleDay(Resource):
     def get(self, weekday):
         logging.info('Request for All Sites Single Day, weekday: ' + weekday)
         update_sites()
-        returnSites = []
+        return_sites = []
         if weekday == 'today':
             weekday = get_today()
         check_weekday(weekday)
@@ -153,11 +156,11 @@ class AllSiteSingleDay(Resource):
         for site in sites:
             for day in site.days:
                 if day.weekday == german_weekday:
-                    returnSite = classes.Site(site.url, site.site)
-                    returnSite.days.append(day)
-                    returnSites.append(returnSite)
-        if returnSites:
-            return returnSites
+                    return_site = classes.Site(site.url, site.site)
+                    return_site.days.append(day)
+                    return_sites.append(return_site)
+        if return_sites:
+            return return_sites
         else:
             abort(404, description="No menu for this day!")
 
@@ -187,9 +190,13 @@ ALL_SITES = '/sites/all'
 SINGLE_SITE = '/sites/<string:sitename>'
 SINGLE_DAY = '/days/<string:weekday>'
 
+# noinspection PyTypeChecker
 api.add_resource(AllSites, VERSION_1 + ALL_SITES)
+# noinspection PyTypeChecker
 api.add_resource(AllSiteSingleDay, VERSION_1 + ALL_SITES + SINGLE_DAY)
+# noinspection PyTypeChecker
 api.add_resource(SingleSite, VERSION_1 + SINGLE_SITE)
+# noinspection PyTypeChecker
 api.add_resource(SingleSiteSingleDay, VERSION_1 + SINGLE_SITE + SINGLE_DAY)
 
 if __name__ == "__main__":

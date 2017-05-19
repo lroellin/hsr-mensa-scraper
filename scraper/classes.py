@@ -1,8 +1,7 @@
 from enum import Enum
-import json
 
 
-class Site():
+class Site:
     def __init__(self, url, site):
         super().__init__()
         self.url = url
@@ -15,7 +14,7 @@ class SiteType(Enum):
     FORSCHUNGSZENTRUM = "forschungszentrum"
 
 
-class SiteDay():
+class SiteDay:
     def __init__(self, weekday, date):
         super().__init__()
         self.weekday = weekday
@@ -23,7 +22,7 @@ class SiteDay():
         self.menus = []
 
 
-class MenuItem():
+class MenuItem:
     def __init__(self, title, description):
         super().__init__()
         self.title = title
