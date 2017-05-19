@@ -5,14 +5,13 @@ from scraper import scraper
 def print_menu(sites):
     for site in sites:
         print('=== Menu for Site ' + site.site.value + ' ===')
-        for weekday in ['Mo', 'Di', 'Mi', 'Do', 'Fr']:
-            print('== ' + weekday + ' ==')
-            if weekday in site.days:
-                day = site.days[weekday]
-                for menu in day.menus:
-                    print(menu.title + ': ' + menu.description)
-            else:
-                print('(no menu')
+        for day in site.days:
+            print('== Menu for Day ' + day.weekday)
+            for menu in day.menus:
+                print(menu.title)
+                print(menu.description)
+
+
 
 
 def main():

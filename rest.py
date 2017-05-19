@@ -8,10 +8,12 @@ import os
 from scraper import classes
 from scraper import scraper
 
+
 class UnicodeApi(Api):
     """
     from here: https://github.com/flask-restful/flask-restful/issues/552
     """
+
     def __init__(self, *args, **kwargs):
         super(UnicodeApi, self).__init__(*args, **kwargs)
         self.app.config['RESTFUL_JSON'] = {
@@ -20,6 +22,7 @@ class UnicodeApi(Api):
         self.representations = {
             'application/json; charset=utf-8': output_json
         }
+
 
 application = Flask('hsr-mensa-scraper')
 
@@ -81,7 +84,12 @@ def update_sites():
                          classes.SiteType.FORSCHUNGSZENTRUM)
         ]
         for site in sites:
-            scraper.scrap_site(site)
+            try:
+                scraper.scrap_site(site)
+            except:
+                abort(500,
+                      description='Uh-oh, scraping didn\'t work. Please file an issue at github.com/lroellin/hsr-mensa-scaper')
+
             if len(site.days) < 1:
                 abort(503,
                       description='There are no upcoming days on the website (normal on a weekend). '
