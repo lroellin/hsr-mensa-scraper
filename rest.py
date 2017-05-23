@@ -1,10 +1,13 @@
+import calendar
+import datetime
+import logging
+import os
+from logging.handlers import TimedRotatingFileHandler
+
 from flask import Flask, redirect
 from flask_restful import Resource, Api, fields, marshal_with, abort, output_json
-import datetime
-import calendar
-import logging
-from logging.handlers import TimedRotatingFileHandler
-import os
+from flask_compress import Compress
+
 from scraper import classes
 from scraper import scraper
 
@@ -25,6 +28,7 @@ class UnicodeApi(Api):
 
 
 application = Flask('hsr-mensa-scraper')
+Compress(application)
 
 api = UnicodeApi(application)
 
@@ -88,8 +92,8 @@ def update_sites():
             try:
                 scraper.scrap_site(site)
             except:
-                abort(500,
-                      description='Uh-oh, scraping didn\'t work. '
+                abort(503,
+                      description='Uh-oh, scraping broke'
                                   'Please file an issue at github.com/lroellin/hsr-mensa-scaper')
 
             if len(site.days) < 1:
